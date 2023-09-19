@@ -24,10 +24,10 @@ async function handler(req, res) {
 
     let client;
 
+    const connectionString = `mongodb+srv://${process.env.mongoDB_username}:${process.env.mongoDB_password}@${process.env.mongoDB_cluster}.repnmln.mongodb.net/${process.env.mongoDB_database}?retryWrites=true&w=majority`;
+
     try {
-      client = await MongoClient.connect(
-        "mongodb+srv://diegosilvacarreras:eQERYZTaiQPLh40E@cluster0.repnmln.mongodb.net/my-site?retryWrites=true&w=majority"
-      );
+      client = await MongoClient.connect(connectionString);
     } catch (error) {
       res.status(500).json({ message: "could not connect to database" });
       return;
@@ -36,14 +36,14 @@ async function handler(req, res) {
     const db = client.db();
     try {
       const result = await db.collection("messages").insertOne(newMessage);
-      newMessage.id = result.insertedId
+      newMessage.id = result.insertedId;
     } catch (error) {
       client.close();
       res.status(500).json({ message: "failed to store new message" });
       return;
     }
 
-    client.close()
+    client.close();
 
     res.status(201).json({ message: "succesfully stored message" });
   }
